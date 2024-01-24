@@ -75,9 +75,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'djangom.wsgi.application'
 
-CSRF_TRUSTED_ORIGINS = ['https://djangoformsmysql-production.up.railway.app/', 'https://djangoformsmysql-production.up.railway.app/admin', 'https://djangoformsmysql-production.up.railway.app/produto']
+CSRF_TRUSTED_ORIGINS = [
+    'https://djangoformsmysql-production.up.railway.app/',
+    'https://djangoformsmysql-production.up.railway.app/admin/login/?next=/admin/',
+    'https://djangoformsmysql-production.up.railway.app/admin/login/?next=/admin',
+    'https://djangoformsmysql-production.up.railway.app/admin',
+    'https://djangoformsmysql-production.up.railway.app/produto',
+    'https://djangoformsmysql-production.up.railway.app',
+    'https://djangoformsmysql-production.up.railway.app/contato',
+    'https://djangoformsmysql-production.up.railway.app/admin/',
+    'https://djangoformsmysql-production.up.railway.app/produto/',
+    'https://djangoformsmysql-production.up.railway.app',
+]
 
-
+MIDDLEWARE_CLASSES = 'django.contrib.csrf.middleware.CsrfMiddleware'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
