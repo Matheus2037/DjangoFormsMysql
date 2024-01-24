@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-!oim&vq7v_&*oa!9y5ipx)n4+wju+ddp2fqnm!+re%ojg=eok)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://djangoformsmysql-production.up.railway.app']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
