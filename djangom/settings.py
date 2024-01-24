@@ -81,13 +81,15 @@ WSGI_APPLICATION = 'djangom.wsgi.application'
 
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://postgres:2Bd-335f11aeb32bc2bbdCGBaaafdFAF@viaduct.proxy.rlwy.net:52709/railway',
-        conn_max_age=600,
-        ssl_require=not DEBUG
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': '2Bd-335f11aeb32bc2bbdCGBaaafdFAF',
+        'HOST': 'viaduct.proxy.rlwy.net',
+        'PORT': '52709',
+    }
 }
-
 """
 DATABASES = {
     'default': {
