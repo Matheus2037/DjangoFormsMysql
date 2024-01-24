@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,6 +79,15 @@ WSGI_APPLICATION = 'djangom.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default='postgresql://postgres:2Bd-335f11aeb32bc2bbdCGBaaafdFAF@viaduct.proxy.rlwy.net:52709/railway',
+        conn_max_age=600,
+        ssl_require=not DEBUG
+    )
+}
+
 """
 DATABASES = {
     'default': {
@@ -90,17 +100,6 @@ DATABASES = {
     }
 }
 """
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'railway',
-        'USER': 'root',
-        'PASSWORD': 'A5c3Ghcgd5CFd523gDc-dD32gfE3A-f3',
-        'HOST': 'viaduct.proxy.rlwy.net',
-        'PORT': '20055',
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
