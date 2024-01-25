@@ -2,12 +2,29 @@ from django.shortcuts import render
 from .forms import ContatoForm, ProdutoModelForm
 from django.contrib import messages
 from .models import Produto
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404, HttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def index(request):
+    produto_list = Produto.objects.order_by('id')
+    paginator = Paginator(produto_list, 10)  # Dividir a lista em páginas de 10 produtos cada
+
+    page = request.GET.get('page')
+    try:
+        produtos = paginator.page(page)
+    except PageNotAnInteger:
+        # Se 'page' não for um número inteiro, exibir a primeira página
+        produtos = paginator.page(1)
+    except EmptyPage:
+        # Se 'page' estiver fora do intervalo, exibir a última página de resultados
+        produtos = paginator.page(paginator.num_pages)
+
+    form = ProdutoModelForm()
+
     context = {
-        'produtos': Produto.objects.all()
+        'produtos': produtos,
+        'form': form,
     }
     return render(request, 'index.html', context)
 
@@ -31,7 +48,6 @@ def contato(request):
 
 
 def produto(request):
-    print(f'Usuário: {request.user}')
     if str(request.user) != 'AnonymousUser':
         if str(request.method) == 'POST':
             form = ProdutoModelForm(request.POST, request.FILES)
@@ -50,3 +66,22 @@ def produto(request):
 
     else:
         return redirect('index')
+
+def deletar_produto(request, product_id):
+    if request.method == 'GET':
+        product = get_object_or_404(Produto, pk=product_id)
+        product.delete()
+        return redirect('index')
+    else:
+        return HttpResponse("Método não permitido")
+
+def editar_produto(request, produto_id):
+    produto = get_object_or_404(Produto, pk=produto_id)
+    if request.method == 'POST':
+        form = ProdutoModelForm(request.POST, request.FILES, instance=produto)
+        if form.is_valid():
+            form.save()
+            return redirect('index', produto_id=produto.id)
+    else:
+        form = ProdutoModelForm(instance=produto)
+    return render(request, 'index', {'form': form, 'produto': produto})
