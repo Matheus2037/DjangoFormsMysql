@@ -81,7 +81,7 @@ def editar_produto(request, produto_id):
         form = ProdutoModelForm(request.POST, request.FILES, instance=produto)
         if form.is_valid():
             form.save()
-            return redirect('index', produto_id=produto.id)
+            return redirect('index')
     else:
         form = ProdutoModelForm(instance=produto)
     return render(request, 'index', {'form': form, 'produto': produto})
