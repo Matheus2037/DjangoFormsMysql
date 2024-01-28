@@ -4,27 +4,35 @@ from django.contrib import messages
 from .models import Produto
 from django.shortcuts import redirect, get_object_or_404, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 
 def index(request):
-    produto_list = Produto.objects.order_by('id')
-    paginator = Paginator(produto_list, 10)  # Dividir a lista em páginas de 10 produtos cada
+    search_query = request.GET.get('q')
 
-    page = request.GET.get('page')
-    try:
-        produtos = paginator.page(page)
-    except PageNotAnInteger:
-        # Se 'page' não for um número inteiro, exibir a primeira página
-        produtos = paginator.page(1)
-    except EmptyPage:
-        # Se 'page' estiver fora do intervalo, exibir a última página de resultados
-        produtos = paginator.page(paginator.num_pages)
+    if search_query:
+        produtos = Produto.objects.filter(Q(id__icontains=search_query) | Q(nome__icontains=search_query)).order_by('id')
+
+    else:
+        produto_list = Produto.objects.order_by('id')
+        paginator = Paginator(produto_list, 10)  # Dividir a lista em páginas de 10 produtos cada
+
+        page = request.GET.get('page')
+        try:
+            produtos = paginator.page(page)
+        except PageNotAnInteger:
+            # Se 'page' não for um número inteiro, exibir a primeira página
+            produtos = paginator.page(1)
+        except EmptyPage:
+            # Se 'page' estiver fora do intervalo, exibir a última página de resultados
+            produtos = paginator.page(paginator.num_pages)
 
     form = ProdutoModelForm()
 
     context = {
         'produtos': produtos,
         'form': form,
+        'search_query': search_query,
     }
     return render(request, 'index.html', context)
 
