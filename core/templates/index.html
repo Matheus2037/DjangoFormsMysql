@@ -37,7 +37,7 @@
                 {% for produto in produtos %}
                     <tr>
                         <td scope="row">{{ produto.id }}</td>
-                        <td scope="row"><a href="#modal{{produto.id}}" data-toggle="modal">{{ produto.nome }}</a></td>
+                        <td scope="row"><a href="#modal{{produto.id}}" data-toggle="modal" style="color: #fff;">{{ produto.nome }}</a></td>
                         <td scope="row">{{ produto.preco }}</td>
                         <td scope="row">{{ produto.estoque }}</td>
                         <td scope="row" style="width: 130px;">
