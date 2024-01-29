@@ -41,9 +41,9 @@
                         <td scope="row">{{ produto.preco }}</td>
                         <td scope="row">{{ produto.estoque }}</td>
                         <td scope="row" style="width: 130px;">
-                            <a href="#" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
-                            <a href="#" class="edit" title="Edit" data-toggle="modal" data-target="#editModal{{ produto.id }}"><i class="material-icons">&#xE254;</i></a>
-                            <a href="{% url 'deletar_produto' produto.id %}" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+                            <a href="#" class="view" title="View" data-toggle="tooltip"><i class="material-icons" style="color: #fff;">&#xE417;</i></a>
+                            <a href="#" class="edit" title="Edit" data-toggle="modal" data-target="#editModal{{ produto.id }}"><i class="material-icons" style="color: #fff;">&#xE254;</i></a>
+                            <a href="{% url 'deletar_produto' produto.id %}" class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons" style="color: #fff;">&#xE872;</i></a>
                         </td>
                     </tr>
 
