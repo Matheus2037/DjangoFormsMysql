@@ -9,53 +9,72 @@
 </head>
 <body>
 <div class="container">
-        <h1>Criar Venda</h1>
+    <h1>Criar Venda</h1>
 
-        {% if messages %}
-            <div class="alert alert-success" role="alert">
-                {% for message in messages %}
-                    {{ message }}
+    {% if messages %}
+        <div class="alert alert-success" role="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ venda_form.as_p }}
+        {{ item_venda_formset.management_form }}
+        <table class="table" id="item-venda-table">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Deletar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in item_venda_formset %}
+                <tr class="item-venda-form">
+                    <td>{{ form.produto }}</td>
+                    <td>{{ form.quantidade }}</td>
+                    <td>{{ form.DELETE }}</td>
+                </tr>
                 {% endfor %}
-            </div>
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-secondary" id="add-item-venda">Adicionar Produto</button>
+        <button type="submit" class="btn btn-primary">Salvar Venda</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        {% if messages %}
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 3000);  // Fecha o pop-up automaticamente após 3 segundos
         {% endif %}
 
-        <form method="post">
-            {% csrf_token %}
-            {{ venda_form.as_p }}
-            {{ item_venda_formset.management_form }}
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Produto</th>
-                        <th>Quantidade</th>
-                        <th>Deletar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for form in item_venda_formset %}
-                    <tr>
-                        <td>{{ form.produto }}</td>
-                        <td>{{ form.quantidade }}</td>
-                        <td>{{ form.DELETE }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button type="submit" class="btn btn-primary">Salvar Venda</button>
-        </form>
-    </div>
+        let itemVendaFormCount = {{ item_venda_formset.total_form_count }};
+        let itemVendaFormTemplate = $('.item-venda-form').first().clone();
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            {% if messages %}
-                setTimeout(function() {
-                    $('.alert').alert('close');
-                }, 3000);  // Fecha o pop-up automaticamente após 3 segundos
-            {% endif %}
+        $('#add-item-venda').click(function() {
+            let newItemVendaForm = itemVendaFormTemplate.clone();
+            newItemVendaForm.find(':input').each(function() {
+                let name = $(this).attr('name').replace('-0-', '-' + itemVendaFormCount + '-');
+                let id = $(this).attr('id').replace('-0-', '-' + itemVendaFormCount + '-');
+                $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+            });
+            newItemVendaForm.find('label').each(function() {
+                let newFor = $(this).attr('for').replace('-0-', '-' + itemVendaFormCount + '-');
+                $(this).attr('for', newFor);
+            });
+            newItemVendaForm.appendTo('#item-venda-table tbody');
+            $('#id_form-TOTAL_FORMS').val(++itemVendaFormCount);
         });
-    </script>
+    });
+</script>
 {% bootstrap_javascript jquery='full' %}
 </body>
 </html>
