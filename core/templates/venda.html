@@ -7,10 +7,14 @@
     {% bootstrap_css %}
 </head>
 <body>
+    <h1>Vendas</h1>
 
-    <h1>TELA DE VENDAAAAS</h1>
-
-
+    <!-- Exibir a tabela HTML gerada pelo pandas -->
+    {{ tabela_html|safe }}
+    <div>
+        <a href="{% url 'criar_venda' %}" class="btn btn-dark">Vender</a>
+        <a href="{% url 'index' %}" class="btn btn-primary">Voltar</a>
+    </div>
 {% bootstrap_javascript jquery='full' %}
 </body>
 </html>

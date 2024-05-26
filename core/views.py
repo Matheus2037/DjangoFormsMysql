@@ -4,6 +4,7 @@ from django.contrib import messages
 from .models import Produto, Venda, ItemVenda
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+import pandas as pd
 
 
 
@@ -120,3 +121,15 @@ def criar_venda(request):
         'item_venda_formset': item_venda_formset,
     }
     return render(request, 'venda/criar_venda.html', context)
+
+def venda(request):
+    # Recuperar todas as vendas do banco de dados
+    vendas = Venda.objects.all()
+
+    # Converter os dados das vendas em um DataFrame pandas
+    vendas_df = pd.DataFrame(list(vendas.values()))
+
+    # Renderizar o DataFrame pandas como uma tabela HTML
+    tabela_html = vendas_df.to_html(index=False)
+
+    return render(request, 'venda.html', {'tabela_html': tabela_html})
