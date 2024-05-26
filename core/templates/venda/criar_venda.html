@@ -1,0 +1,61 @@
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Vendas</title>
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+        <h1>Criar Venda</h1>
+
+        {% if messages %}
+            <div class="alert alert-success" role="alert">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {{ venda_form.as_p }}
+            {{ item_venda_formset.management_form }}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Deletar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in item_venda_formset %}
+                    <tr>
+                        <td>{{ form.produto }}</td>
+                        <td>{{ form.quantidade }}</td>
+                        <td>{{ form.DELETE }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">Salvar Venda</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            {% if messages %}
+                setTimeout(function() {
+                    $('.alert').alert('close');
+                }, 3000);  // Fecha o pop-up automaticamente após 3 segundos
+            {% endif %}
+        });
+    </script>
+{% bootstrap_javascript jquery='full' %}
+</body>
+</html>

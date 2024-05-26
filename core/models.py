@@ -48,7 +48,8 @@ class ItemVenda(Base):
     venda = models.ForeignKey(Venda, related_name='itens', on_delete=models.CASCADE)
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     quantidade = models.PositiveIntegerField('Quantidade')
-    preco = models.DecimalField('Preço', max_digits=8, decimal_places=2)
+    preco = models.DecimalField('Preço', max_digits=8, decimal_places=2, editable=False)
+    readonly_fields = ('preco', 'subtotal')
 
     def __str__(self):
         return f'{self.quantidade} x {self.produto.nome}'

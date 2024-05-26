@@ -11,6 +11,7 @@ class ProdutoAdmin(admin.ModelAdmin):
     search_fields = ('nome',)
     list_filter = ('ativo', 'criado', 'modificado')
     ordering = ('nome',)
+    readonly_fields = ('preco', 'subtotal')
 
 class ItemVendaInline(admin.TabularInline):
     model = ItemVenda

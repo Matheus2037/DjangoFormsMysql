@@ -1,6 +1,8 @@
 from django import forms
 from django.core.mail.message import EmailMessage
-from .models import Produto
+from .models import Produto, Venda, ItemVenda
+from django.forms import inlineformset_factory
+
 
 class ContatoForm(forms.Form):
     nome = forms.CharField(label='nome', max_length=100)
@@ -30,3 +32,16 @@ class ProdutoModelForm(forms.ModelForm):
     class Meta:
         model = Produto
         fields = ['nome', 'preco', 'estoque', 'image']
+
+
+class VendaModelForm(forms.ModelForm):
+    class Meta:
+        model = Venda
+        fields = ['cliente']
+
+class ItemVendaForm(forms.ModelForm):
+    class Meta:
+        model = ItemVenda
+        fields = ['produto', 'quantidade']
+
+ItemVendaFormSet = inlineformset_factory(Venda, ItemVenda, form=ItemVendaForm, extra=1, can_delete=True)

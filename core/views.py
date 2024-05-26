@@ -1,10 +1,10 @@
-from django.shortcuts import render
-from .forms import ContatoForm, ProdutoModelForm
+from django.shortcuts import render, get_object_or_404, HttpResponse, redirect
+from .forms import ContatoForm, ProdutoModelForm, VendaModelForm, ItemVendaFormSet
 from django.contrib import messages
-from .models import Produto
-from django.shortcuts import redirect, get_object_or_404, HttpResponse
+from .models import Produto, Venda, ItemVenda
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+
 
 
 def index(request):
@@ -93,3 +93,30 @@ def editar_produto(request, produto_id):
     else:
         form = ProdutoModelForm(instance=produto)
     return render(request, 'index', {'form': form, 'produto': produto})
+
+def venda(request):
+    return render(request, 'venda.html')
+
+def criar_venda(request):
+    if request.method == 'POST':
+        venda_form = VendaModelForm(request.POST)
+        item_venda_formset = ItemVendaFormSet(request.POST, instance=Venda())
+
+        if venda_form.is_valid() and item_venda_formset.is_valid():
+            venda = venda_form.save()
+            itens_venda = item_venda_formset.save(commit=False)
+            for item in itens_venda:
+                item.venda = venda
+                item.save()
+            messages.success(request, 'Venda criada com sucesso!')
+            return redirect('criar_venda')  # Redireciona para a mesma página para novo cadastro
+
+    else:
+        venda_form = VendaModelForm()
+        item_venda_formset = ItemVendaFormSet()
+
+    context = {
+        'venda_form': venda_form,
+        'item_venda_formset': item_venda_formset,
+    }
+    return render(request, 'venda/criar_venda.html', context)
