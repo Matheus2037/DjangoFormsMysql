@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, HttpResponse, redirect
 from .forms import ContatoForm, ProdutoModelForm, VendaModelForm, ItemVendaFormSet
 from django.contrib import messages
+from django.http import JsonResponse
 from .models import Produto, Venda, ItemVenda
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q
+from django.db.models import Q, Count, Sum, F, ExpressionWrapper, DecimalField
 import pandas as pd
 
 
@@ -123,13 +124,50 @@ def criar_venda(request):
     return render(request, 'venda/criar_venda.html', context)
 
 def venda(request):
-    # Recuperar todas as vendas do banco de dados
     vendas = Venda.objects.all()
 
     # Converter os dados das vendas em um DataFrame pandas
     vendas_df = pd.DataFrame(list(vendas.values()))
 
+    if 'data' in vendas_df.columns:
+        vendas_df = vendas_df.drop(columns=['data'])
+
     # Renderizar o DataFrame pandas como uma tabela HTML
-    tabela_html = vendas_df.to_html(index=False)
+    tabela_html = vendas_df.to_html(index=False, classes='table table-striped')
 
     return render(request, 'venda.html', {'tabela_html': tabela_html})
+
+
+
+def relatorio(request):
+    return render(request, 'relatorio.html')
+
+def get_relatorio_cliente(request):
+    # Agrupar vendas por cliente e calcular a quantidade de vendas e valor total
+    vendas_agrupadas = Venda.objects.values('cliente').annotate(
+        quantidade_vendas=Count('id'),
+        valor_total=Sum('total'),
+    )
+
+    # Converter os dados para um DataFrame pandas
+    df_clientes = pd.DataFrame(list(vendas_agrupadas))
+
+    # Renderizar o DataFrame pandas como uma tabela HTML
+    tabela_html = df_clientes.to_html(index=False, classes='table table-striped')
+
+    return JsonResponse({'tabela_html': tabela_html})
+
+def get_relatorio_produto(request):
+    # Agrupar itens de venda por produto e calcular a quantidade total e valor total
+    itens_agrupados = ItemVenda.objects.values('produto__nome').annotate(
+        quantidade_total=Sum('quantidade'),
+        valor_total=Sum(ExpressionWrapper(F('quantidade') * F('preco'), output_field=DecimalField(max_digits=10, decimal_places=2)))
+    )
+
+    # Converter os dados para um DataFrame pandas
+    df_produtos = pd.DataFrame(list(itens_agrupados))
+
+    # Renderizar o DataFrame pandas como uma tabela HTML
+    tabela_html = df_produtos.to_html(index=False, classes='table table-striped')
+
+    return JsonResponse({'tabela_html': tabela_html})

@@ -1,0 +1,78 @@
+{% load bootstrap4 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatórios</title>
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Minha Loja</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'venda' %}active{% endif %}" href="{% url 'venda' %}">Vendas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'relatorio' %}active{% endif %}" href="{% url 'relatorio' %}">Relatórios</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+<div class="container mt-4">
+        <h1>Relatórios</h1>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <button id="btn-relatorio-cliente" class="btn btn-secondary btn-lg btn-block">Relatório de Clientes</button>
+            </div>
+            <div class="col-md-6">
+                <button id="btn-relatorio-produto" class="btn btn-secondary btn-lg btn-block">Relatório de Produtos</button>
+            </div>
+        </div>
+        <div id="relatorio-container"></div>
+    </div>
+
+    {% bootstrap_javascript jquery='full' %}
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#btn-relatorio-cliente').click(function() {
+                $.ajax({
+                    url: "{% url 'get_relatorio_cliente' %}",
+                    method: "GET",
+                    success: function(data) {
+                        $('#relatorio-container').html(data.tabela_html);
+                    },
+                    error: function(error) {
+                        console.error("Erro ao carregar o relatório de clientes:", error);
+                    }
+                });
+            });
+
+            $('#btn-relatorio-produto').click(function() {
+                $.ajax({
+                    url: "{% url 'get_relatorio_produto' %}",
+                    method: "GET",
+                    success: function(data) {
+                        $('#relatorio-container').html(data.tabela_html);
+                    },
+                    error: function(error) {
+                        console.error("Erro ao carregar o relatório de produtos:", error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

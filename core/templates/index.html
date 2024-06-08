@@ -29,6 +29,9 @@
                 <li class="nav-item">
                     <a class="nav-link {% if request.resolver_match.url_name == 'venda' %}active{% endif %}" href="{% url 'venda' %}">Vendas</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'relatorio' %}active{% endif %}" href="{% url 'relatorio' %}">Relatórios</a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -130,9 +133,6 @@
                     <a href="{% url 'index' %}" class="btn btn-dark">Limpar Pesquisa</a>
                 </div>
             {% endif %}
-                  <div>
-                    <a href="{% url 'venda' %}" class="btn btn-dark">Venda</a>
-                  </div>
                   <div class="col-2">
                     <a href="{% url 'produto' %}" class="btn btn-dark">
                         <i class="material-icons align-middle mr-1">add_circle</i> Adicionar

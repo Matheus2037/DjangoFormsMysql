@@ -1,0 +1,26 @@
+{% load bootstrap4 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Produtos</title>
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Relatório de Produtos</h1>
+        <!-- Inclua a tabela de produtos -->
+        <div>
+            {{ tabela_html|safe }}
+        </div>
+        <a href="{% url 'relatorio' %}" class="btn btn-secondary mt-4">Voltar</a>
+    </div>
+
+    {% bootstrap_javascript jquery='full' %}
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
