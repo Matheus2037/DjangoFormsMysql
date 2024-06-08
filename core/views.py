@@ -6,6 +6,10 @@ from .models import Produto, Venda, ItemVenda
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Count, Sum, F, ExpressionWrapper, DecimalField
 import pandas as pd
+import xlsxwriter
+from io import BytesIO
+from xhtml2pdf import pisa
+from django.template.loader import get_template
 
 
 
@@ -171,3 +175,56 @@ def get_relatorio_produto(request):
     tabela_html = df_produtos.to_html(index=False, classes='table table-striped')
 
     return JsonResponse({'tabela_html': tabela_html})
+
+
+def exportar_relatorio_excel(request, tipo):
+    if tipo == 'cliente':
+        vendas_agrupadas = Venda.objects.values('cliente').annotate(
+            quantidade_vendas=Count('id'),
+            valor_total=Sum('total'),
+        )
+        df = pd.DataFrame(list(vendas_agrupadas))
+    elif tipo == 'produto':
+        itens_agrupados = ItemVenda.objects.values('produto__nome').annotate(
+            quantidade_total=Sum('quantidade'),
+            valor_total=Sum(ExpressionWrapper(F('quantidade') * F('preco'), output_field=DecimalField(max_digits=10, decimal_places=2)))
+        )
+        df = pd.DataFrame(list(itens_agrupados))
+
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    df.to_excel(writer, index=False, sheet_name='Relatorio')
+    writer.close()  # Feche o ExcelWriter para salvar o arquivo no buffer
+    output.seek(0)  # Mova o cursor para o início do buffer
+
+    response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=relatorio_{tipo}.xlsx'
+    return response
+
+def exportar_relatorio_pdf(request, tipo):
+    if tipo == 'cliente':
+        vendas_agrupadas = Venda.objects.values('cliente').annotate(
+            quantidade_vendas=Count('id'),
+            valor_total=Sum('total'),
+        )
+        df = pd.DataFrame(list(vendas_agrupadas))
+    elif tipo == 'produto':
+        itens_agrupados = ItemVenda.objects.values('produto__nome').annotate(
+            quantidade_total=Sum('quantidade'),
+            valor_total=Sum(ExpressionWrapper(F('quantidade') * F('preco'), output_field=DecimalField(max_digits=10, decimal_places=2)))
+        )
+        df = pd.DataFrame(list(itens_agrupados))
+
+    template_path = 'relatorio_pdf.html'
+    context = {'data': df.to_dict(orient='records')}
+    template = get_template(template_path)
+    html = template.render(context)
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename=relatorio_{tipo}.pdf'
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response

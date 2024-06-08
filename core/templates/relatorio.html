@@ -8,6 +8,12 @@
     {% bootstrap_css %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        .active {
+            font-weight: bold;
+            color: black !important;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -34,9 +40,13 @@
         <div class="row mb-4">
             <div class="col-md-6">
                 <button id="btn-relatorio-cliente" class="btn btn-secondary btn-lg btn-block">Relatório de Clientes</button>
+                <a href="{% url 'exportar_relatorio_excel' 'cliente' %}" class="btn btn-info btn-lg btn-block mt-2">Exportar Excel</a>
+                <a href="{% url 'exportar_relatorio_pdf' 'cliente' %}" class="btn btn-info btn-lg btn-block mt-2">Exportar PDF</a>
             </div>
             <div class="col-md-6">
                 <button id="btn-relatorio-produto" class="btn btn-secondary btn-lg btn-block">Relatório de Produtos</button>
+                <a href="{% url 'exportar_relatorio_excel' 'produto' %}" class="btn btn-info btn-lg btn-block mt-2">Exportar Excel</a>
+                <a href="{% url 'exportar_relatorio_pdf' 'produto' %}" class="btn btn-info btn-lg btn-block mt-2">Exportar PDF</a>
             </div>
         </div>
         <div id="relatorio-container"></div>
