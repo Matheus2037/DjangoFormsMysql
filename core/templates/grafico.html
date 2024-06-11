@@ -4,22 +4,19 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Vendas</title>
+    <title>Gráficos</title>
     {% bootstrap_css %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="{% static '../css/styles.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
     <style>
-        .highlight {
-            background-color: lightyellow;
-        }
         .active {
             font-weight: bold;
             color: black !important;
         }
     </style>
-</head>
 <body>
-     <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">Minha Loja</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -41,22 +38,20 @@
             </ul>
         </div>
     </nav>
-
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1>Vendas</h1>
-            <a href="{% url 'criar_venda' %}" class="btn btn-dark">
-                <i class="material-icons align-middle mr-1">add_circle</i> Adicionar
-            </a>
-        </div>
-        <!-- Inclua a tabela estilizada -->
-        <div>
-            {{ tabela_html|safe }}
-        </div>
+<div class="container mt-4">
+    <h1>Gráficos</h1>
+    <div class="btn-group mt-4" role="group">
+        <a href="?clientes=true" class="btn btn-dark">Gráfico de Clientes</a>
+        <a href="?produtos=true" class="btn btn-dark">Gráfico de Produtos</a>
+        <a href="?total_produto=true" class="btn btn-dark">Gráfico de Total de Produtos</a>
     </div>
-
-    {% bootstrap_javascript jquery='full' %}
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    {% if img_tag %}
+        <h2 class="mt-4">{{ title }}</h2>
+        <div class="mt-4">
+            <img src="{{ img_tag }}" class="img-fluid" alt="Gráfico">
+        </div>
+    {% endif %}
+</div>
+{% bootstrap_javascript jquery='full' %}
 </body>
 </html>

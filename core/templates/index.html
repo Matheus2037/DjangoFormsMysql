@@ -32,6 +32,9 @@
                 <li class="nav-item">
                     <a class="nav-link {% if request.resolver_match.url_name == 'relatorio' %}active{% endif %}" href="{% url 'relatorio' %}">Relatórios</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'grafico' %}active{% endif %}" href="{% url 'grafico' %}">Gráficos</a>
+                </li>
             </ul>
         </div>
     </nav>

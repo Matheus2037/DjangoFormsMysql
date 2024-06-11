@@ -10,6 +10,10 @@ import xlsxwriter
 from io import BytesIO
 from xhtml2pdf import pisa
 from django.template.loader import get_template
+import matplotlib.pyplot as plt
+import urllib, base64
+import io
+import seaborn as sns
 
 
 
@@ -228,3 +232,62 @@ def exportar_relatorio_pdf(request, tipo):
     if pisa_status.err:
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
+
+def grafico(request):
+    return render(request, 'grafico.html')
+
+
+def plot_to_img_tag(fig):
+    buf = BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    image_base64 = base64.b64encode(buf.read()).decode('utf-8')
+    plt.close(fig)
+    return f'data:image/png;base64,{image_base64}'
+
+
+def grafico(request):
+    context = {}
+
+    if 'clientes' in request.GET:
+        vendas_df = pd.DataFrame(list(Venda.objects.values('cliente').annotate(total_vendas=Count('id'))))
+        fig, ax = plt.subplots(figsize=(12, 6))  # Aumenta o tamanho da figura
+        sns.barplot(x='cliente', y='total_vendas', data=vendas_df, ax=ax)
+        ax.set_title('Quantidade de Vendas por Cliente')
+        ax.set_xlabel('Cliente')
+        ax.set_ylabel('Quantidade de Vendas')
+        context['img_tag'] = plot_to_img_tag(fig)
+        context['title'] = 'Gráfico de Vendas por Cliente'
+
+    elif 'produtos' in request.GET:
+        vendas_df = pd.DataFrame(list(ItemVenda.objects.values('produto_id').annotate(total_vendas=Sum('quantidade'))))
+        produtos = Produto.objects.filter(id__in=vendas_df['produto_id'])
+        vendas_df['produto_id'] = produtos.values_list('id', flat=True)  # Substitui pelo ID do produto
+
+        fig, ax = plt.subplots(figsize=(14, 8))  # Aumenta o tamanho da figura
+        sns.barplot(x='produto_id', y='total_vendas', data=vendas_df, ax=ax)
+        ax.set_title('Quantidade de Vendas por Produto')
+        ax.set_xlabel('ID do Produto')
+        ax.set_ylabel('Quantidade de Vendas')
+        context['img_tag'] = plot_to_img_tag(fig)
+        context['title'] = 'Gráfico de Vendas por Produto'
+
+    elif 'total_produto' in request.GET:
+        vendas_por_produto = ItemVenda.objects.values('produto__id').annotate(
+            total_vendas=Sum('venda__total')
+        )
+        vendas_df = pd.DataFrame(list(vendas_por_produto))
+        produtos = Produto.objects.filter(id__in=vendas_df['produto__id'])
+        vendas_df['produto_id'] = produtos.values_list('id', flat=True)  # Substitui pelo ID do produto
+
+        fig, ax = plt.subplots(figsize=(14, 8))  # Aumenta o tamanho da figura
+        sns.barplot(x='produto_id', y='total_vendas', data=vendas_df, ax=ax)
+        ax.set_title('Total de Vendas por Produto')
+        ax.set_xlabel('ID do Produto')
+        ax.set_ylabel('Total de Vendas em Reais')
+        context['img_tag'] = plot_to_img_tag(fig)
+        context['title'] = 'Gráfico de Total de Vendas por Produto'
+
+    return render(request, 'grafico.html', context)
+
+
